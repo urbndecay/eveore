@@ -1,4 +1,4 @@
 eveore
 ======
 
-A quick ore price table.
+Ore prices and reprocessing
