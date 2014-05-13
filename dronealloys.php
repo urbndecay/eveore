@@ -19,7 +19,7 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute(array($typeid));
 
 while ($row = $stmt->fetchObject()) {
-    $regionnames[$row->regionID] = $row->regionName;
+	$regionnames[$row->regionID] = $row->regionName;
 }
 
 if (array_key_exists($region,$regionnames)) {
@@ -117,14 +117,14 @@ foreach ($minerals as $typeid => $typename)
 {
 
 
-echo "<td>".$typename.'</td><td id="mineral-'.$typeid.'">';
+	echo "<td>".$typename.'</td><td id="mineral-'.$typeid.'">';
 
-    list($price,$buyprice) = returnprice($typeid,$regionkey);
-        if ($price)
-        {
-            echo $price;
-        }
-echo "</td>";
+	list($price,$buyprice) = returnprice($typeid,$regionkey);
+	if ($price)
+	{
+		echo $price;
+	}
+	echo "</td>";
 }
 ?>
 </tr>
@@ -136,14 +136,14 @@ echo "</td>";
 <?
 foreach ($regionnames as $id => $regionname)
 {
-if ($id==$region)
-{
-echo "<option value='".$id."' selected=selected>".$regionname."</option>\n";
-}
-else
-{
-echo "<option value='".$id."'>".$regionname."</option>\n";
-}
+	if ($id==$region)
+	{
+		echo "<option value='".$id."' selected=selected>".$regionname."</option>\n";
+	}
+	else
+	{
+		echo "<option value='".$id."'>".$regionname."</option>\n";
+	}
 
 }
 ?>
@@ -156,7 +156,7 @@ echo "<option value='".$id."'>".$regionname."</option>\n";
 echo "<tr><th>Ore</th>";
 foreach ($minerals as $typeid => $typename)
 {
-echo "<th>$typename</th>";
+	echo "<th>$typename</th>";
 }
 echo "<th>Volume</th><th>Required</th><th>Isk/M3</th><th>Isk Each</th><th>ISK per m3 after refining</th></tr></thead><tbody>\n";
 
@@ -171,34 +171,34 @@ $bestore=array(34=>1230,35=>1228,36=>18,37=>1227,38=>1231,39=>1225,40=>22);
 
 foreach ($ores as $typeid => $typename)
 {
-    echo "<tr><th>".$typename."</th>";
-    $stmt->execute(array($typeid));
-    $position=0;
-    while ($row = $stmt->fetchObject()){
-        while ($row->materialTypeID != $dispminerals[$position]){
-            $position++;
-            echo "<td>&nbsp;</td>";
-        }
-        $class="notbest";
-        if ($bestore[$row->materialTypeID]==$typeid)
-        {
-             $class="bestore";
-        }
-        echo "<td id='quantity-".$typeid."-".$row->materialTypeID."' class='".$class."'>".$row->quantity."</td>";
-        $volume=$row->volume;
-        $portion=$row->portionSize;
-            $position++;
-    }
-    while ($position<8)
-    {
-        $position++;
-        echo "<td>&nbsp;</td>";
-    }
-    echo "<td id='volume-".$typeid."'>".$volume."</td>";
-    echo "<td id='portion-".$typeid."'>".$portion."</td>";
-    echo "<td id='iskm3-".$typeid."'>&nbsp;</td>\n";
-    echo "<td id='iskeach-".$typeid."'>&nbsp;</td>\n";
-    echo "<td id='iskrefinedm3-".$typeid."'>&nbsp;</td></tr>\n";
+	echo "<tr><th>".$typename."</th>";
+	$stmt->execute(array($typeid));
+	$position=0;
+	while ($row = $stmt->fetchObject()){
+		while ($row->materialTypeID != $dispminerals[$position]){
+			$position++;
+			echo "<td>&nbsp;</td>";
+		}
+		$class="notbest";
+		if ($bestore[$row->materialTypeID]==$typeid)
+		{
+			$class="bestore";
+		}
+		echo "<td id='quantity-".$typeid."-".$row->materialTypeID."' class='".$class."'>".$row->quantity."</td>";
+		$volume=$row->volume;
+		$portion=$row->portionSize;
+		$position++;
+	}
+	while ($position<8)
+	{
+		$position++;
+		echo "<td>&nbsp;</td>";
+	}
+	echo "<td id='volume-".$typeid."'>".$volume."</td>";
+	echo "<td id='portion-".$typeid."'>".$portion."</td>";
+	echo "<td id='iskm3-".$typeid."'>&nbsp;</td>\n";
+	echo "<td id='iskeach-".$typeid."'>&nbsp;</td>\n";
+	echo "<td id='iskrefinedm3-".$typeid."'>&nbsp;</td></tr>\n";
 }
 
 
@@ -206,12 +206,84 @@ foreach ($ores as $typeid => $typename)
 ?>
 </tbody>
 </table>
+<h1>Drone Alloy Values</h1>
+<table border=1 id="dronepoo" class="tablesorter">
+<thead>
+<?
+echo "<tr><th>Alloy</th>";
+foreach ($minerals as $typeid => $typename)
+{
+	echo "<th>$typename</th>";
+}
+echo "<th style='display:none;'>Volume</th><th style='display:none;'>Required</th><th style='display:none;'>Isk/M3</th><th>Isk Each</th></tr></thead><tbody>\n";
 
+
+$sql='select materialTypeID,quantity,volume,portionSize from invTypes it ,invTypeMaterials itm where it.typeid=itm.TypeID and it.typeid=? order by materialTypeID';
+
+$stmt = $dbh->prepare($sql);
+
+$alloy=array(11724=>"Glossy Compound",11725=>"Plush Compound", 11732=>"Sheen Compound", 11733=>"Motley Compound",11734=>"Opulent Compound",11735=>"Dark Compound", 11736=>"Lustering Alloy",11737=>"Precious Alloy", 11738=>"Lucent Compound",11739=>"Condensed Alloy",11740=>"Gleaming Alloy", 11741=>"Crystal Compound");
+
+foreach ($alloy as $typeid => $typename)
+{
+	echo "<tr><th>".$typename."</th>";
+	$stmt->execute(array($typeid));
+	$position=0;
+	while ($row = $stmt->fetchObject()){
+		while ($row->materialTypeID != $dispminerals[$position]){
+			$position++;
+			echo "<td>&nbsp;</td>";
+		}
+		echo "<td id='quantity-".$typeid."-".$row->materialTypeID."'>".$row->quantity."</td>";
+		$volume=$row->volume;
+		$portion=$row->portionSize;
+		$position++;
+	}
+	while ($position<8)
+	{
+		$position++;
+		echo "<td>&nbsp;</td>";
+	}
+	echo "<td style='display:none;' id='volume-".$typeid."'>".$volume."</td>";
+	echo "<td style='display:none;' id='portion-".$typeid."'>".$portion."</td>";
+	echo "<td style='display:none;' id='iskm3-".$typeid."'>&nbsp;</td>\n";
+	echo "<td id='iskeach-".$typeid."'>&nbsp;</td></tr>\n";
+}
+
+
+
+?>
+</tbody>
+</table>
+<h1>Alloy Region Sell</h1>
+<table border=1 class="tablesorter" id="alloysell">
+<thead>
+<tr><th>Alloy Name</th><th>Isk Each</th></tr>
+</thead>
+<tbody>
+<?
+foreach ($alloy as $typeid => $typename)
+{
+
+
+	echo "<tr><th>".$typename.'</th><td id="alloy-'.$typeid.'">';
+	list($price,$buyprice) = returnprice($typeid,$regionkey);
+	if ($price)
+	{
+		echo $price;
+	}
+
+	echo "</td></tr>\n";
+}
+?>
+</tbody>
+</table>
 
 
 <script>
 <?
 echo "ores=[".join(",",array_keys($ores))."];\n";
+echo "orealloy=[".join(",",array_keys($ores)).",".join(",",array_keys($alloy))."];\n";
 echo "minerals=[".join(",",array_keys($minerals))."];\n";
 ?>
 calculatecosts();
